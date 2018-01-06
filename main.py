@@ -1,24 +1,27 @@
 import numpy as np
 
-from player import Player
-from normalFormGame import NormalFormGame
+from player_ExtensiveForm import Player as ExtensivePlayer
+from games import NormalFormGame, ExtensiveFormGame
 
 
 if __name__ == "__main__":
     verbose = True
-    game = NormalFormGame(verbose=verbose)
-    player0 = Player(game, 0, verbose=verbose)
-    player1 = Player(game, 1, verbose=verbose)
+    game = ExtensiveFormGame(verbose=verbose)
+    seller = ExtensivePlayer(game, 0, verbose=verbose)
+    buyer = ExtensivePlayer(game, 1, verbose=verbose)
 
-    nStep = 20
+    nStep = 100
     for _ in range(nStep):
-        a0 = player0.step()
-        a1 = player1.step()
+        car = game.newDeal()
+        actionSeller = seller.step(car)
+        actionBuyer = buyer.step(actionSeller)
 
-        rewards = game.rewards((a0, a1))
+        rewards = game.rewards((actionSeller, actionBuyer))
+        print(rewards)
 
-        player0.analyzeStep(a0, a1, rewards[0])
-        player1.analyzeStep(a1, a0, rewards[1])
-        print(a0, a1)
+        seller.analyzeStep(actionSeller, actionBuyer, rewards, car)
+        buyer.analyzeStep(actionBuyer, actionSeller, rewards, actionSeller)
+        print(actionSeller, actionBuyer)
 
-    player0.plotAnalysis()
+    seller.plotAnalysis("seller")
+    buyer.plotAnalysis("buyer")
