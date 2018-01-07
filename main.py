@@ -7,10 +7,13 @@ from games import NormalFormGame, ExtensiveFormGame
 gameType = "Normal"
 #gameType = "Extensive"
 
+DeterministicReward = False
+#DeterministicReward = True
+
 if __name__ == "__main__":
     if gameType == "Normal":
         verbose = True
-        game = NormalFormGame(verbose=verbose)
+        game = NormalFormGame(verbose=verbose, DeterministicReward = DeterministicReward)
         p1 = NormalPlayer(game, 0, verbose=verbose)
         p2 = NormalPlayer(game, 1, verbose=verbose)
 
@@ -29,7 +32,7 @@ if __name__ == "__main__":
 
     if gameType == "Extensive":
         verbose = True
-        game = ExtensiveFormGame(verbose=verbose)
+        game = ExtensiveFormGame(verbose=verbose, DeterministicReward = DeterministicReward)
         seller = ExtensivePlayer(game, 0, verbose=verbose)
         buyer = ExtensivePlayer(game, 1, verbose=verbose)
 

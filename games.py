@@ -4,7 +4,7 @@ import random
 
 # %% NFG class
 class NormalFormGame:
-    def __init__(self, verbose=False):
+    def __init__(self, verbose=False, DeterministicReward = True):
         self.verbose = verbose
 
         self.nActions = [2,2]
@@ -12,13 +12,18 @@ class NormalFormGame:
             [[-4,4], [1,-1]],
             [[1,-1], [3,-3]]
         ])
+        self.DeterministicReward = DeterministicReward
 
     def rewards(self, actions):
         '''
         Input: actions as a 2-uplet (a1, a2)
         Output: rewards for each player
         '''
-        return self.matrix[actions]
+        if self.DeterministicReward:
+            rewards = self.matrix[actions]
+        else:
+            rewards = np.random.normal(loc=self.matrix[actions], scale = [0.5,0.5])
+        return rewards
 
     def bestReward(self, playerIndex, opponentAction):
         # If column-player:
@@ -30,7 +35,7 @@ class NormalFormGame:
 
 class ExtensiveFormGame:
     ## The markets for lemon
-    def __init__(self, verbose=False):
+    def __init__(self, verbose=False, DeterministicReward = True):
         self.verbose = verbose
 
         self.nActions = [2,2]
@@ -42,13 +47,18 @@ class ExtensiveFormGame:
             [[1,-1], [0,0]]         #High price, Buy or not
         ]])
         self.goodCar = random.randint(0, 1)
+        self.DeterministicReward = DeterministicReward
 
     def rewards(self, actions):
         '''
         Input: actions as a 2-uplet (actionSeller, actionBuyer)
         Output: rewards for each player
         '''
-        return self.matrix[self.goodCar, actions[0], actions[1]]
+        if self.DeterministicReward:
+            rewards = self.matrix[self.goodCar, actions[0], actions[1]]
+        else:
+            rewards = np.random.normal(loc=self.matrix[self.goodCar, actions[0], actions[1]], scale = [0.5,0.5])
+        return rewards
 
     def newDeal(self):
         self.goodCar = random.randint(0, 1)
@@ -62,6 +72,5 @@ class ExtensiveFormGame:
 
 
 if __name__ == "__main__":
-    a = ExtensiveFormGame()
-    print(a.goodCar)
-    print(a.bestReward(1, 0))
+    a = ExtensiveFormGame(DeterministicReward = False)
+    print(a.rewards((0,1)))
