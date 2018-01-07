@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from normalFormGame import NormalFormGame
+from games import NormalFormGame
 
 
 # %% Player cell
@@ -37,15 +37,20 @@ class Player:
 
         return action
 
-    def analyzeStep(self, playerAction, opponentAction, reward):
+    def analyzeStep(self, playerAction, opponentAction, rewards):
+        reward = rewards[self.playerIndex]
         regret = self.model.bestReward(self.playerIndex, opponentAction) - reward
         self.regrets.append(regret)
 
         if self.strategy == 'UCB':
             self.S[playerAction] += reward
 
-    def plotAnalysis(self):
-        # plt.figure(1, figsize=(13,8))
+    def plotAnalysis(self, player):
         plt.figure(1)
         plt.plot(self.regrets)
+        plt.title("Regrets for %s"%(player))
+        plt.show()
+        plt.figure(1)
+        plt.plot(self.actions)
+        plt.title("Actions for %s"%(player))
         plt.show()

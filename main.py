@@ -1,27 +1,50 @@
 import numpy as np
 
 from player_ExtensiveForm import Player as ExtensivePlayer
+from player_normalForm import Player as NormalPlayer
 from games import NormalFormGame, ExtensiveFormGame
 
+gameType = "Normal"
+#gameType = "Extensive"
 
 if __name__ == "__main__":
-    verbose = True
-    game = ExtensiveFormGame(verbose=verbose)
-    seller = ExtensivePlayer(game, 0, verbose=verbose)
-    buyer = ExtensivePlayer(game, 1, verbose=verbose)
+    if gameType == "Normal":
+        verbose = True
+        game = NormalFormGame(verbose=verbose)
+        p1 = NormalPlayer(game, 0, verbose=verbose)
+        p2 = NormalPlayer(game, 1, verbose=verbose)
 
-    nStep = 100
-    for _ in range(nStep):
-        car = game.newDeal()
-        actionSeller = seller.step(car)
-        actionBuyer = buyer.step(actionSeller)
+        nStep = 100
+        for _ in range(nStep):
+            a1 = p1.step()
+            a2 = p2.step()
 
-        rewards = game.rewards((actionSeller, actionBuyer))
-        print(rewards)
+            rewards = game.rewards((a1, a2))
 
-        seller.analyzeStep(actionSeller, actionBuyer, rewards, car)
-        buyer.analyzeStep(actionBuyer, actionSeller, rewards, actionSeller)
-        print(actionSeller, actionBuyer)
+            p1.analyzeStep(a1, a2, rewards)
+            p2.analyzeStep(a2, a1, rewards)
 
-    seller.plotAnalysis("seller")
-    buyer.plotAnalysis("buyer")
+        p1.plotAnalysis("First player")
+        p2.plotAnalysis("Second player")
+
+    if gameType == "Extensive":
+        verbose = True
+        game = ExtensiveFormGame(verbose=verbose)
+        seller = ExtensivePlayer(game, 0, verbose=verbose)
+        buyer = ExtensivePlayer(game, 1, verbose=verbose)
+
+        nStep = 100
+        for _ in range(nStep):
+            car = game.newDeal()
+            actionSeller = seller.step(car)
+            actionBuyer = buyer.step(actionSeller)
+
+            rewards = game.rewards((actionSeller, actionBuyer))
+            print(rewards)
+
+            seller.analyzeStep(actionSeller, actionBuyer, rewards, car)
+            buyer.analyzeStep(actionBuyer, actionSeller, rewards, actionSeller)
+            print(actionSeller, actionBuyer)
+
+        seller.plotAnalysis("seller")
+        buyer.plotAnalysis("buyer")

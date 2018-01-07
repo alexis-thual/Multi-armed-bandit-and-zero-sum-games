@@ -35,11 +35,11 @@ class ExtensiveFormGame:
 
         self.nActions = [2,2]
         self.matrix = np.array([[ #Bad Car
-            [[1,1], [0,0]],        #Low price, Buy or not
-            [[2,-2], [0,0]]        #High price, Buy or not
+            [[-1,1], [0,0]],        #Low price, Buy or not
+            [[2,-2], [1,-1]]        #High price, Buy or not
         ],[                       #Good Car
-            [[-2,2], [0,0]],        #Low price, Buy or not
-            [[1,1], [0,0]]         #High price, Buy or not
+            [[-2,2], [-1,1]],        #Low price, Buy or not
+            [[1,-1], [0,0]]         #High price, Buy or not
         ]])
         self.goodCar = random.randint(0, 1)
 
