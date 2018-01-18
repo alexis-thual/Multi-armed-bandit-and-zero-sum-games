@@ -26,14 +26,24 @@ class Player:
 
         if self.strategy == 'UCB':
             t = len(self.actions)
-            action = t if (t < self.explorationTime) else np.argmax(self.S / self.N + self.rho * np.sqrt(np.log(t) / (2*self.N)))
-            self.N[action] += 1
+            action = t if (t < self.nActions) else np.argmax(self.S / self.N + self.rho * np.sqrt(np.log(t) / (2*self.N)))
+
+        elif self.strategy == 'Thompson sampling':
+            t = len(self.actions)
+            action = t if (t < self.nActions) else np.argmax(np.random.beta((self.S+4)/8+1, self.N - (self.S+4)/8 + 1))
+
+        elif self.strategy == 'Naive':
+            t = len(self.actions)
+            action = t if (t < self.nActions) else np.argmax(self.S/self.N)
+        else :
+            print("strategy not implemented : random policy applied -- choose 'UCB', 'Thompson sampling' or 'Naive'")
 
         return action
 
     def step(self):
         action = self.chooseAction()
         self.actions.append(action)
+        self.N[action] += 1
 
         return action
 
@@ -41,13 +51,12 @@ class Player:
         reward = rewards[self.playerIndex]
         regret = self.model.bestReward(self.playerIndex, opponentAction) - reward
         self.regrets.append(regret)
+        self.S[playerAction] += reward
 
-        if self.strategy == 'UCB':
-            self.S[playerAction] += reward
 
     def plotAnalysis(self, player):
         plt.figure(1)
-        plt.plot(self.regrets)
+        plt.plot(np.cumsum(self.regrets))
         plt.title("Regrets for %s"%(player))
         plt.show()
         plt.figure(1)

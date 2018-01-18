@@ -3,21 +3,28 @@ import numpy as np
 from player_ExtensiveForm import Player as ExtensivePlayer
 from player_normalForm import Player as NormalPlayer
 from games import NormalFormGame, ExtensiveFormGame
+from tools import *
 
 gameType = "Normal"
 #gameType = "Extensive"
 
-DeterministicReward = False
-#DeterministicReward = True
+#strategy = 'UCB'
+strategy = 'Thompson sampling'
+#strategy = 'Naive'
+
+#DeterministicReward = False
+DeterministicReward = True
+
+
 
 if __name__ == "__main__":
     if gameType == "Normal":
         verbose = True
-        game = NormalFormGame(verbose=verbose, DeterministicReward = DeterministicReward)
-        p1 = NormalPlayer(game, 0, verbose=verbose)
-        p2 = NormalPlayer(game, 1, verbose=verbose)
+        game = NormalFormGame(verbose=verbose, DeterministicReward = DeterministicReward, random = True, nb_actions=2)
+        p1 = NormalPlayer(game, 0, verbose=verbose, strategy = strategy)
+        p2 = NormalPlayer(game, 1, verbose=verbose, strategy = strategy)
 
-        nStep = 100
+        nStep = 800
         for _ in range(nStep):
             a1 = p1.step()
             a2 = p2.step()
@@ -26,28 +33,47 @@ if __name__ == "__main__":
 
             p1.analyzeStep(a1, a2, rewards)
             p2.analyzeStep(a2, a1, rewards)
+        print()
+        NE, NEs = Nash_equilibrium(game.matrix)
+        if NE:
+            print("Nash equilibrium(s) : %s"%(str(NEs)))
+        else:
+            print("No Nash equilibrium")
+        algo_convergence, converge_points = has_converged(p1,p2)
+        if algo_convergence:
+            print("Algo converged to : %s"%(str(converge_points)))
+        else:
+            print("No convergence")
 
-        p1.plotAnalysis("First player")
-        p2.plotAnalysis("Second player")
+        if converge_points in NEs:
+            print("Convergence to Nash equilibrium !!!")
+
+        if NE and not algo_convergence:
+            print(game.matrix)
+            p1.plotAnalysis("First player")
+            p2.plotAnalysis("Second player")
+
+        if not NE and algo_convergence:
+            print(game.matrix)
+            p1.plotAnalysis("First player")
+            p2.plotAnalysis("Second player")
 
     if gameType == "Extensive":
         verbose = True
-        game = ExtensiveFormGame(verbose=verbose, DeterministicReward = DeterministicReward)
-        seller = ExtensivePlayer(game, 0, verbose=verbose)
-        buyer = ExtensivePlayer(game, 1, verbose=verbose)
+        game = ExtensiveFormGame(verbose=verbose, DeterministicReward = DeterministicReward, random = False, nb_info = 4, nb_actions=4)
+        seller = ExtensivePlayer(game, 0, verbose=verbose, strategy = strategy)
+        buyer = ExtensivePlayer(game, 1, verbose=verbose, strategy = strategy)
 
-        nStep = 100
+        nStep = 300
         for _ in range(nStep):
-            car = game.newDeal()
-            actionSeller = seller.step(car)
+            info = game.newDeal()
+            actionSeller = seller.step(info)
             actionBuyer = buyer.step(actionSeller)
 
             rewards = game.rewards((actionSeller, actionBuyer))
-            print(rewards)
 
-            seller.analyzeStep(actionSeller, actionBuyer, rewards, car)
+            seller.analyzeStep(actionSeller, actionBuyer, rewards, info)
             buyer.analyzeStep(actionBuyer, actionSeller, rewards, actionSeller)
-            print(actionSeller, actionBuyer)
 
         seller.plotAnalysis("seller")
         buyer.plotAnalysis("buyer")

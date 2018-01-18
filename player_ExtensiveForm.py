@@ -15,9 +15,14 @@ class Player:
         self.playerIndex = playerIndex
         self.actions = []
         self.regrets = []
-        self.nbInformation = 2
-        self.actionsByInfo = [[],[]]
+        if playerIndex == 0:
+            self.nbInformation = model.nInfo
+        else:
+            self.nbInformation = model.nActions[0]
 
+        self.actionsByInfo = []
+        for i in range(self.nbInformation):
+            self.actionsByInfo.append([])
         # UCB attributes
         self.explorationTime = self.nActions
         self.S = np.zeros((self.nbInformation, self.nActions))
@@ -28,9 +33,16 @@ class Player:
         action = np.random.randint(self.nActions)
 
         if self.strategy == 'UCB':
-            t = len(self.actions)
-            action = random.randint(0,self.nActions-1) if (t < 4*self.explorationTime) else np.argmax(self.S[information] / self.N[information] + self.rho * np.sqrt(np.log(t) / (2*self.N[information])))
-            self.N[information,action] += 1
+            t = len(self.actionsByInfo[information])
+            action = t if (t < self.nActions) else np.argmax(self.S[information] / self.N[information] + self.rho * np.sqrt(np.log(t) / (2*self.N[information])))
+        elif self.strategy == 'Thompson sampling':
+            t = len(self.actionsByInfo[information])
+            action = t if (t < self.nActions) else np.argmax(np.random.beta(self.S[information]/4+1, self.N[information] - self.S[information]/4 + 1))
+        elif self.strategy == 'Naive':
+            t = len(self.actionsByInfo[information])
+            action = t if (t < self.nActions) else np.argmax(self.S[information]/self.N[information])
+        else :
+            print("strategy not implemented : random policy applied -- choose 'UCB', 'Thompson sampling' or 'Naive'")
 
         return action
 
@@ -38,7 +50,7 @@ class Player:
         action = self.chooseAction(information)
         self.actions.append(action)
         self.actionsByInfo[information].append(action)
-
+        self.N[information,action] += 1
         return action
 
     def analyzeStep(self, playerAction, opponentAction, rewards, information):
@@ -49,16 +61,12 @@ class Player:
             self.S[information,playerAction] += reward
 
     def plotAnalysis(self, player):
-        # plt.figure(1, figsize=(13,8))
         plt.figure(1)
-        plt.plot(self.regrets)
+        plt.plot(np.cumsum(self.regrets))
         plt.title("Regrets for %s"%(player))
         plt.show()
-        plt.figure(1)
-        plt.plot(self.actionsByInfo[0])
-        plt.title("Action for info = 0 for %s"%(player))
-        plt.show()
-        plt.figure(1)
-        plt.plot(self.actionsByInfo[1])
-        plt.title("Action for info = 1 for %s"%(player))
-        plt.show()
+        for i in range(self.nbInformation):
+            plt.figure(1)
+            plt.plot(self.actionsByInfo[i])
+            plt.title("Action for info = %i for %s"%(i,player))
+            plt.show()
