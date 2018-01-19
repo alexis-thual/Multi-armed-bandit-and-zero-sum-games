@@ -30,7 +30,7 @@ class Player:
 
         elif self.strategy == 'Thompson sampling':
             t = len(self.actions)
-            action = t if (t < self.nActions) else np.argmax(np.random.beta((self.S+4)/8+1, self.N - (self.S+4)/8 + 1))
+            action = t if (t < self.nActions) else np.argmax(np.random.beta((self.S+4*self.N)/8+1, self.N - (self.S+4)/8 + 1))
 
         elif self.strategy == 'Naive':
             t = len(self.actions)

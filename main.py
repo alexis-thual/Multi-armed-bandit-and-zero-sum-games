@@ -8,6 +8,9 @@ from tools import *
 gameType = "Normal"
 #gameType = "Extensive"
 
+#RandomInitialization = True
+RandomInitialization = False
+
 #strategy = 'UCB'
 strategy = 'Thompson sampling'
 #strategy = 'Naive'
@@ -20,11 +23,11 @@ DeterministicReward = True
 if __name__ == "__main__":
     if gameType == "Normal":
         verbose = True
-        game = NormalFormGame(verbose=verbose, DeterministicReward = DeterministicReward, random = True, nb_actions=2)
+        game = NormalFormGame(verbose=verbose, DeterministicReward = DeterministicReward, random = RandomInitialization, nb_actions=2)
         p1 = NormalPlayer(game, 0, verbose=verbose, strategy = strategy)
         p2 = NormalPlayer(game, 1, verbose=verbose, strategy = strategy)
 
-        nStep = 800
+        nStep = 100
         for _ in range(nStep):
             a1 = p1.step()
             a2 = p2.step()
@@ -48,19 +51,13 @@ if __name__ == "__main__":
         if converge_points in NEs:
             print("Convergence to Nash equilibrium !!!")
 
-        if NE and not algo_convergence:
-            print(game.matrix)
-            p1.plotAnalysis("First player")
-            p2.plotAnalysis("Second player")
+        p1.plotAnalysis("First player")
+        p2.plotAnalysis("Second player")
 
-        if not NE and algo_convergence:
-            print(game.matrix)
-            p1.plotAnalysis("First player")
-            p2.plotAnalysis("Second player")
 
     if gameType == "Extensive":
         verbose = True
-        game = ExtensiveFormGame(verbose=verbose, DeterministicReward = DeterministicReward, random = False, nb_info = 4, nb_actions=4)
+        game = ExtensiveFormGame(verbose=verbose, DeterministicReward = DeterministicReward, random = RandomInitialization, nb_info = 4, nb_actions=4)
         seller = ExtensivePlayer(game, 0, verbose=verbose, strategy = strategy)
         buyer = ExtensivePlayer(game, 1, verbose=verbose, strategy = strategy)
 

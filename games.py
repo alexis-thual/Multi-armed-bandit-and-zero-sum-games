@@ -34,7 +34,7 @@ class NormalFormGame:
         if self.DeterministicReward:
             rewards = self.matrix[actions]
         else:
-            rewards = np.random.normal(loc=self.matrix[actions], scale = [0.5,0.5])
+            rewards = np.random.normal(loc=self.matrix[actions], scale = [1,1])
         return rewards
 
     def bestReward(self, playerIndex, opponentAction):
@@ -46,21 +46,21 @@ class NormalFormGame:
 
 
 class ExtensiveFormGame:
-    ## The markets for lemon
     def __init__(self, verbose=False, DeterministicReward = True, random = False, nb_info = 2, nb_actions = 2):
         self.verbose = verbose
 
         if random:
             self.randomInitializer(nb_info, nb_actions)
         else:
+            ## The markets for lemon for in need buyers
             self.nActions = [2,2]
             self.nInfo = 2
             self.matrix = np.array([[ #Bad Car
-                [[-1,1], [0,0]],        #Low price, Buy or not
+                [[0,0], [1,-1]],        #Low price, Buy or not
                 [[2,-2], [1,-1]]        #High price, Buy or not
             ],[                       #Good Car
-                [[-2,2], [-1,1]],       #Low price, Buy or not
-                [[1,-1], [0,0]]         #High price, Buy or not
+                [[-2,2], [1,-1]],       #Low price, Buy or not
+                [[0,0], [1,-1]]         #High price, Buy or not
             ]])
             self.info = np.random.randint(0, 1)
         self.DeterministicReward = DeterministicReward
@@ -89,7 +89,7 @@ class ExtensiveFormGame:
         if self.DeterministicReward:
             rewards = self.matrix[self.info, actions[0], actions[1]]
         else:
-            rewards = np.random.normal(loc=self.matrix[self.info, actions[0], actions[1]], scale = [0.5,0.5])
+            rewards = np.random.normal(loc=self.matrix[self.info, actions[0], actions[1]], scale = [1,1])
         return rewards
 
     def newDeal(self):

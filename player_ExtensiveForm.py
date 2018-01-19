@@ -37,7 +37,7 @@ class Player:
             action = t if (t < self.nActions) else np.argmax(self.S[information] / self.N[information] + self.rho * np.sqrt(np.log(t) / (2*self.N[information])))
         elif self.strategy == 'Thompson sampling':
             t = len(self.actionsByInfo[information])
-            action = t if (t < self.nActions) else np.argmax(np.random.beta(self.S[information]/4+1, self.N[information] - self.S[information]/4 + 1))
+            action = t if (t < self.nActions) else np.argmax(np.random.beta((self.S[information]+4*self.N[information])/8+1, self.N[information] - (self.S[information]+4)/8 + 1))
         elif self.strategy == 'Naive':
             t = len(self.actionsByInfo[information])
             action = t if (t < self.nActions) else np.argmax(self.S[information]/self.N[information])
@@ -56,9 +56,11 @@ class Player:
     def analyzeStep(self, playerAction, opponentAction, rewards, information):
         reward = rewards[self.playerIndex]
         regret = self.model.bestReward(self.playerIndex, opponentAction) - reward
+        if self.playerIndex == 1 and opponentAction == 1 and self.model.info == 1:
+            print(reward)
+            print(self.model.bestReward(self.playerIndex, opponentAction))
         self.regrets.append(regret)
-        if self.strategy == 'UCB':
-            self.S[information,playerAction] += reward
+        self.S[information,playerAction] += reward
 
     def plotAnalysis(self, player):
         plt.figure(1)
