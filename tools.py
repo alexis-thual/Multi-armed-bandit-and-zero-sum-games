@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 def Nash_equilibrium(rewards):
     existence_Nash_equilibrium = False
@@ -12,6 +13,13 @@ def Nash_equilibrium(rewards):
 
     return existence_Nash_equilibrium, Nash_equilibriums
 
+def Lemke_Howson_algorithm(rewards):
+    rescaled_rewards = (rewards + 1) / 2
+    
+    return rescaled_rewards
+
+
+
 def has_converged(p1,p2):
     n_iter_conv = 20
     if np.unique(p1.actions[-n_iter_conv:]).size == 1:
@@ -20,3 +28,26 @@ def has_converged(p1,p2):
             p2_converged_to = np.unique(p2.actions[-n_iter_conv:])[0]
             return True, (p1_converged_to,p2_converged_to)
     return False, (-1,-1)
+
+def choose(probabilities):
+    choice = random.uniform(0, 1)
+    choiceIndex = 0
+
+    for proba in probabilities:
+        choice -= proba
+        if choice <= 0:
+            return choiceIndex
+
+        choiceIndex += 1
+
+
+
+matrix = np.array([
+    # Pierre papier ciseaux
+    [[0,0], [1,-1], [-1,1]],
+    [[-1,1], [0,0], [1,-1]],
+    [[1,-1], [-1,1], [0,0]]
+])
+
+
+print(Lemke_Howson_algorithm(matrix))

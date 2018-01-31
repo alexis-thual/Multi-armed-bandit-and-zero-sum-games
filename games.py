@@ -4,17 +4,29 @@ import random
 
 # %% NFG class
 class NormalFormGame:
-    def __init__(self, verbose=False, DeterministicReward = True, random = False, nb_actions = 2):
+    def __init__(self, verbose=False, DeterministicReward = True, random = False, nb_actions = 2, mixed = False):
         self.verbose = verbose
 
         if random:
             self.randomInitializer(nb_actions)
+        elif mixed:
+            self.nActions = [3,3]
+
+            self.matrix = np.array([
+                # Pierre papier ciseaux
+                [[0,0], [1,-1], [-1,1]],
+                [[-1,1], [0,0], [1,-1]],
+                [[1,-1], [-1,1], [0,0]]
+            ])
+
         else:
             self.nActions = [2,2]
+
             self.matrix = np.array([
                 [[-4,4], [1,-1]],
                 [[1,-1], [3,-3]]
             ])
+
         self.DeterministicReward = DeterministicReward
 
     def randomInitializer(self, nb_actions):
@@ -34,7 +46,7 @@ class NormalFormGame:
         if self.DeterministicReward:
             rewards = self.matrix[actions]
         else:
-            rewards = np.random.normal(loc=self.matrix[actions], scale = [1,1])
+            rewards = np.random.binomial(1,loc=self.matrix[actions]/4)
         return rewards
 
     def bestReward(self, playerIndex, opponentAction):
@@ -55,6 +67,7 @@ class ExtensiveFormGame:
             ## The markets for lemon for in need buyers
             self.nActions = [2,2]
             self.nInfo = 2
+
             self.matrix = np.array([[ #Bad Car
                 [[0,0], [1,-1]],        #Low price, Buy or not
                 [[2,-2], [1,-1]]        #High price, Buy or not
@@ -62,6 +75,7 @@ class ExtensiveFormGame:
                 [[-2,2], [1,-1]],       #Low price, Buy or not
                 [[0,0], [1,-1]]         #High price, Buy or not
             ]])
+
             self.info = np.random.randint(0, 1)
         self.DeterministicReward = DeterministicReward
 
@@ -89,7 +103,7 @@ class ExtensiveFormGame:
         if self.DeterministicReward:
             rewards = self.matrix[self.info, actions[0], actions[1]]
         else:
-            rewards = np.random.normal(loc=self.matrix[self.info, actions[0], actions[1]], scale = [1,1])
+            rewards = np.random.binomial(1,loc=self.matrix[self.info, actions[0], actions[1]]/4)
         return rewards
 
     def newDeal(self):

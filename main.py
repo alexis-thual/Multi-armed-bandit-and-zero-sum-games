@@ -12,22 +12,26 @@ gameType = "Normal"
 RandomInitialization = False
 
 #strategy = 'UCB'
-strategy = 'Thompson sampling'
+strategy = 'Exp3'
+#strategy = 'Thompson sampling'
 #strategy = 'Naive'
 
 #DeterministicReward = False
 DeterministicReward = True
+
+mixed = True
+#mixed = False
 
 
 
 if __name__ == "__main__":
     if gameType == "Normal":
         verbose = True
-        game = NormalFormGame(verbose=verbose, DeterministicReward = DeterministicReward, random = RandomInitialization, nb_actions=2)
+        game = NormalFormGame(verbose=verbose, DeterministicReward = DeterministicReward, random = RandomInitialization, nb_actions=2, mixed = mixed)
         p1 = NormalPlayer(game, 0, verbose=verbose, strategy = strategy)
         p2 = NormalPlayer(game, 1, verbose=verbose, strategy = strategy)
 
-        nStep = 100
+        nStep = 1000
         for _ in range(nStep):
             a1 = p1.step()
             a2 = p2.step()
@@ -53,6 +57,9 @@ if __name__ == "__main__":
 
         p1.plotAnalysis("First player")
         p2.plotAnalysis("Second player")
+
+        print(p1.probabilityDistibution)
+        print(p2.probabilityDistibution)
 
 
     if gameType == "Extensive":
