@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import random
 
 from games import ExtensiveFormGame
+from tools import *
+import math
 
 
 # %% Player cell
@@ -29,12 +31,24 @@ class Player:
         self.N = np.zeros((self.nbInformation, self.nActions))
         self.rho = 0.2
 
+        #Exp3 attributes
+        self.gamma = 0.01
+        self.eta = self.gamma/self.nActions
+        self.beta = 0.01
+        self.weights = np.ones(self.nActions)
+
+        self.probabilityDistibution = np.random.random((self.nbInformation,self.nActions))
+        for i in range(self.nbInformation):
+            self.probabilityDistibution[i] /= np.sum(self.probabilityDistibution[i])
+
     def chooseAction(self, information):
         action = np.random.randint(self.nActions)
 
         if self.strategy == 'UCB':
             t = len(self.actionsByInfo[information])
             action = t if (t < self.nActions) else np.argmax(self.S[information] / self.N[information] + self.rho * np.sqrt(np.log(t) / (2*self.N[information])))
+        elif self.strategy == 'Exp3':
+            action = choose(self.probabilityDistibution[information])
         elif self.strategy == 'Thompson sampling':
             t = len(self.actionsByInfo[information])
             action = t if (t < self.nActions) else np.argmax(np.random.beta((self.S[information]+4*self.N[information])/8+1, self.N[information] - (self.S[information]+4)/8 + 1))
@@ -58,6 +72,15 @@ class Player:
         regret = self.model.bestReward(self.playerIndex, opponentAction) - reward
         self.regrets.append(regret)
         self.S[information,playerAction] += reward
+
+        if self.strategy == 'Exp3':
+            maxreward = np.max(self.model.matrix[information,:,:,self.playerIndex])
+            minreward = np.min(self.model.matrix[information,:,:,self.playerIndex])
+
+            estimatedRewards = self.beta/self.probabilityDistibution[information]
+            estimatedRewards[playerAction] += (reward - minreward)/(maxreward-minreward)/self.probabilityDistibution[information,playerAction]
+            self.weights = self.weights * np.exp(self.eta * estimatedRewards)
+            self.probabilityDistibution[information] = (1 - self.gamma) * self.weights/ np.sum(self.weights) + self.gamma/self.nActions
 
     def plotAnalysis(self, player):
         plt.figure(1)

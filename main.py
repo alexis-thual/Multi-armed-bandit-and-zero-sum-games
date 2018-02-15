@@ -5,8 +5,8 @@ from player_normalForm import Player as NormalPlayer
 from games import NormalFormGame, ExtensiveFormGame
 from tools import *
 
-gameType = "Normal"
-#gameType = "Extensive"
+#gameType = "Normal"
+gameType = "Extensive"
 
 #RandomInitialization = True
 RandomInitialization = False
@@ -19,7 +19,7 @@ strategy = 'Exp3'
 #DeterministicReward = False
 DeterministicReward = True
 
-mixed = True
+mixed = False
 
 
 
@@ -68,7 +68,7 @@ if __name__ == "__main__":
         seller = ExtensivePlayer(game, 0, verbose=verbose, strategy = strategy)
         buyer = ExtensivePlayer(game, 1, verbose=verbose, strategy = strategy)
 
-        nStep = 300
+        nStep = 5000
         for _ in range(nStep):
             info = game.newDeal()
             actionSeller = seller.step(info)
@@ -78,6 +78,9 @@ if __name__ == "__main__":
 
             seller.analyzeStep(actionSeller, actionBuyer, rewards, info)
             buyer.analyzeStep(actionBuyer, actionSeller, rewards, actionSeller)
+
+        print(seller.probabilityDistibution)
+        print(buyer.probabilityDistibution)
 
         seller.plotAnalysis("seller")
         buyer.plotAnalysis("buyer")
