@@ -20,7 +20,6 @@ strategy = 'Exp3'
 DeterministicReward = True
 
 mixed = True
-#mixed = False
 
 
 
@@ -31,7 +30,7 @@ if __name__ == "__main__":
         p1 = NormalPlayer(game, 0, verbose=verbose, strategy = strategy)
         p2 = NormalPlayer(game, 1, verbose=verbose, strategy = strategy)
 
-        nStep = 1000
+        nStep = 5000
         for _ in range(nStep):
             a1 = p1.step()
             a2 = p2.step()
@@ -40,26 +39,27 @@ if __name__ == "__main__":
 
             p1.analyzeStep(a1, a2, rewards)
             p2.analyzeStep(a2, a1, rewards)
-        print()
         NE, NEs = Nash_equilibrium(game.matrix)
-        if NE:
-            print("Nash equilibrium(s) : %s"%(str(NEs)))
-        else:
-            print("No Nash equilibrium")
-        algo_convergence, converge_points = has_converged(p1,p2)
-        if algo_convergence:
-            print("Algo converged to : %s"%(str(converge_points)))
-        else:
-            print("No convergence")
-
-        if converge_points in NEs:
-            print("Convergence to Nash equilibrium !!!")
-
-        p1.plotAnalysis("First player")
-        p2.plotAnalysis("Second player")
+        # if NE:
+        #     print("Nash equilibrium(s) : %s"%(str(NEs)))
+        # else:
+        #     print("No Nash equilibrium")
+        # algo_convergence, converge_points = has_converged(p1,p2)
+        # if algo_convergence:
+        #     print("Algo converged to : %s"%(str(converge_points)))
+        # else:
+        #     print("No convergence")
+        #
+        # if converge_points in NEs:
+        #     print("Convergence to Nash equilibrium !!!")
 
         print(p1.probabilityDistibution)
         print(p2.probabilityDistibution)
+
+        # p1.plotAnalysis("First player")
+        # p2.plotAnalysis("Second player")
+
+
 
 
     if gameType == "Extensive":

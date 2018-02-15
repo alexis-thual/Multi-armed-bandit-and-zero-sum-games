@@ -56,9 +56,6 @@ class Player:
     def analyzeStep(self, playerAction, opponentAction, rewards, information):
         reward = rewards[self.playerIndex]
         regret = self.model.bestReward(self.playerIndex, opponentAction) - reward
-        if self.playerIndex == 1 and opponentAction == 1 and self.model.info == 1:
-            print(reward)
-            print(self.model.bestReward(self.playerIndex, opponentAction))
         self.regrets.append(regret)
         self.S[information,playerAction] += reward
 

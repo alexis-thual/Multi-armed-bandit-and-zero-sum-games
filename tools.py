@@ -13,13 +13,6 @@ def Nash_equilibrium(rewards):
 
     return existence_Nash_equilibrium, Nash_equilibriums
 
-def Lemke_Howson_algorithm(rewards):
-    rescaled_rewards = (rewards + 1) / 2
-    
-    return rescaled_rewards
-
-
-
 def has_converged(p1,p2):
     n_iter_conv = 20
     if np.unique(p1.actions[-n_iter_conv:]).size == 1:
@@ -37,7 +30,6 @@ def choose(probabilities):
         choice -= proba
         if choice <= 0:
             return choiceIndex
-
         choiceIndex += 1
 
 
@@ -48,6 +40,3 @@ matrix = np.array([
     [[-1,1], [0,0], [1,-1]],
     [[1,-1], [-1,1], [0,0]]
 ])
-
-
-print(Lemke_Howson_algorithm(matrix))

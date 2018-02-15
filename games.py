@@ -13,7 +13,7 @@ class NormalFormGame:
             self.nActions = [3,3]
 
             self.matrix = np.array([
-                # Pierre papier ciseaux
+                # Rock paper scissors
                 [[0,0], [1,-1], [-1,1]],
                 [[-1,1], [0,0], [1,-1]],
                 [[1,-1], [-1,1], [0,0]]
