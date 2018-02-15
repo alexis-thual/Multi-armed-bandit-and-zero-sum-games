@@ -16,8 +16,8 @@ class Player:
         self.playerIndex = playerIndex
         self.actions = []
         self.regrets = []
-        # self.probabilityDistibution = [1/self.nActions]*self.nActions
-        self.probabilityDistibution = [0.01,0.01,0.98]
+        self.probabilityDistibution = np.random.random(self.nActions)
+        self.probabilityDistibution /= np.sum(self.probabilityDistibution)
 
         # UCB attributes
         self.explorationTime = self.nActions
@@ -26,11 +26,10 @@ class Player:
         self.rho = 0.2
 
         #Exp3 attributes
-        self.gamma = 0.2
+        self.gamma = 0.01
         self.eta = self.gamma/self.nActions
         self.beta = 1
         self.weights = np.ones(self.nActions)
-        self.estimatedRewards = np.zeros(self.nActions)
 
     def chooseAction(self):
         action = np.random.randint(self.nActions)
@@ -62,16 +61,13 @@ class Player:
         self.S[playerAction] += reward
 
         if self.strategy == 'Exp3':
-            maxreward = 1
-            minreward = -1
-            # estimatedReward = reward//self.probabilityDistibution[playerAction]
-            # self.weights[playerAction] *= np.exp(self.gamma/self.nActions*estimatedReward)
-            for a in range(self.nActions):
-                self.estimatedRewards[a] = self.beta/self.probabilityDistibution[a]
-            self.estimatedRewards[playerAction] += (maxreward - reward)/(maxreward-minreward)/self.probabilityDistibution[playerAction]
-            self.weights = self.weights * np.exp(self.eta * self.estimatedRewards)
-            self.weights /= np.sum(self.weights)
-            self.probabilityDistibution = (1 - self.gamma) * self.weights + self.gamma/self.nActions
+            maxreward = np.max(self.model.matrix[:,:,self.playerIndex])
+            minreward = np.min(self.model.matrix[:,:,self.playerIndex])
+
+            estimatedRewards = self.beta/self.probabilityDistibution
+            estimatedRewards[playerAction] += (reward - minreward)/(maxreward-minreward)/self.probabilityDistibution[playerAction]
+            self.weights = self.weights * np.exp(self.eta * estimatedRewards)
+            self.probabilityDistibution = (1 - self.gamma) * self.weights/ np.sum(self.weights) + self.gamma/self.nActions
 
 
     def plotAnalysis(self, player):
