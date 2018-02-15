@@ -28,7 +28,7 @@ class Player:
         #Exp3 attributes
         self.gamma = 0.01
         self.eta = self.gamma/self.nActions
-        self.beta = 1
+        self.beta = 0.01
         self.weights = np.ones(self.nActions)
 
     def chooseAction(self):

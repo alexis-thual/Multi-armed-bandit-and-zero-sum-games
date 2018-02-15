@@ -5,8 +5,8 @@ from player_normalForm import Player as NormalPlayer
 from games import NormalFormGame, ExtensiveFormGame
 from tools import *
 
-#gameType = "Normal"
-gameType = "Extensive"
+gameType = "Normal"
+# gameType = "Extensive"
 
 #RandomInitialization = True
 RandomInitialization = False
@@ -19,9 +19,7 @@ strategy = 'Exp3'
 #DeterministicReward = False
 DeterministicReward = True
 
-mixed = False
-
-
+mixed = True
 
 if __name__ == "__main__":
     if gameType == "Normal":
